@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TraumaSurgeon.Audio;
 using TraumaSurgeon.Core;
 using TraumaSurgeon.InputSystem;
@@ -20,21 +21,62 @@ namespace TraumaSurgeon.Player
     /// <summary>
     /// Simple interactable that raises a callback. Used for scrub sinks, imaging displays,
     /// instrument tables and the anaesthesia machine.
+    ///
+    /// Stations register themselves so the HUD can put a marker over whichever one the current
+    /// objective needs - without that, "walk somewhere and press E" is guesswork.
     /// </summary>
     public class InteractableStation : MonoBehaviour, IInteractable
     {
         public string prompt = "Use";
         public bool enabledForInteraction = true;
 
+        /// <summary>The objective verb this station satisfies, for HUD signposting.</summary>
+        public SurgicalActionType action = SurgicalActionType.None;
+
         /// <summary>Assigned by whatever builds the station.</summary>
         public System.Action<GameObject> OnInteract;
+
+        /// <summary>Every live station in the scene.</summary>
+        public static readonly List<InteractableStation> All = new List<InteractableStation>();
 
         public string InteractionPrompt => prompt;
         public bool CanInteract => enabledForInteraction;
 
+        private void OnEnable()
+        {
+            if (!All.Contains(this))
+            {
+                All.Add(this);
+            }
+        }
+
+        private void OnDisable()
+        {
+            All.Remove(this);
+        }
+
         public void Interact(GameObject interactor)
         {
             OnInteract?.Invoke(interactor);
+        }
+
+        /// <summary>Finds the station that satisfies a given objective verb, or null.</summary>
+        public static InteractableStation ForAction(SurgicalActionType wanted)
+        {
+            if (wanted == SurgicalActionType.None)
+            {
+                return null;
+            }
+
+            foreach (InteractableStation station in All)
+            {
+                if (station != null && station.action == wanted && station.CanInteract)
+                {
+                    return station;
+                }
+            }
+
+            return null;
         }
     }
 

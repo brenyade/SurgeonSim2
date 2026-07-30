@@ -33,6 +33,12 @@ namespace TraumaSurgeon.Core
 
         public bool IsPaused { get; private set; }
 
+        /// <summary>
+        /// How far down the surgeon looks when a case begins. Level with the horizon puts the
+        /// operating table below the bottom of the screen, which reads as a broken camera.
+        /// </summary>
+        private const float SpawnLookDownDegrees = 26f;
+
         protected override void OnSingletonAwake()
         {
             DataLibrary.EnsureLoaded();
@@ -127,7 +133,14 @@ namespace TraumaSurgeon.Core
 
             if (PlayerRig != null && Room != null)
             {
-                PlayerRig.Movement.Warp(Room.transform.TransformPoint(Room.SurgeonSpawn), 270f);
+                Vector3 spawn = Room.transform.TransformPoint(Room.SurgeonSpawn);
+                PlayerRig.Movement.Warp(spawn, 270f, SpawnLookDownDegrees);
+
+                // Spawn and eye height are the two things that make the game look broken when they
+                // are wrong, so state them plainly in the console rather than leaving it to guesswork.
+                Debug.Log($"[Trauma Surgeon] Surgeon spawned at {spawn} " +
+                          $"(eye height {PlayerRig.Movement.eyeHeight:0.00} m, " +
+                          $"camera world Y {PlayerRig.Camera.transform.position.y:0.00}).");
             }
 
             IsPaused = false;

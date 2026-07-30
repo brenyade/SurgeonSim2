@@ -22,6 +22,10 @@ namespace TraumaSurgeon.Player
         public float pitchMin = -80f;
         public float pitchMax = 80f;
 
+        [Header("Camera")]
+        [Tooltip("Height of the surgeon's eyes above the floor, in metres.")]
+        public float eyeHeight = 1.62f;
+
         [Header("Head bob")]
         public float bobFrequency = 7.5f;
         public float bobAmplitude = 0.022f;
@@ -32,8 +36,8 @@ namespace TraumaSurgeon.Player
         private Vector3 _velocity;
         private float _pitch;
         private float _bobTimer;
-        private Vector3 _cameraRestPosition;
-        private bool _restCaptured;
+        private float _bobPhaseOffsetX;
+        private float _bobPhaseOffsetY;
 
         /// <summary>Current planar speed - used by the hand stability model.</summary>
         public float CurrentSpeed { get; private set; }
@@ -48,26 +52,24 @@ namespace TraumaSurgeon.Player
 
         private void Start()
         {
-            CaptureCameraRest();
+            ApplyEyeHeight();
         }
 
         /// <summary>
-        /// Records the camera pivot's eye-height offset for the head-bob to return to.
+        /// Forces the camera pivot to the surgeon's eye height.
         ///
-        /// This deliberately does NOT happen in Awake: the rig builder adds this component before
-        /// it assigns <see cref="CameraPivot"/>, so an Awake capture reads a null pivot, leaves the
-        /// rest position at the origin, and the bob then eases the camera down to the surgeon's
-        /// feet - which reads in game as spawning under the floor.
+        /// Eye height is an explicit constant rather than a value captured from the pivot at
+        /// startup. An earlier version captured it in Awake, which ran before the rig builder had
+        /// assigned <see cref="CameraPivot"/>; the capture read null, the head-bob then eased the
+        /// camera toward the origin, and the player ended up looking out from floor level. Driving
+        /// the pivot from a constant makes that failure mode impossible regardless of setup order.
         /// </summary>
-        private void CaptureCameraRest()
+        public void ApplyEyeHeight()
         {
-            if (_restCaptured || CameraPivot == null)
+            if (CameraPivot != null)
             {
-                return;
+                CameraPivot.localPosition = new Vector3(0f, eyeHeight, 0f);
             }
-
-            _cameraRestPosition = CameraPivot.localPosition;
-            _restCaptured = true;
         }
 
         private void Update()
@@ -135,34 +137,42 @@ namespace TraumaSurgeon.Player
                 return;
             }
 
-            // Belt and braces: if the pivot was wired up after Start, capture it the first time
-            // we actually need it rather than bobbing toward a bogus origin.
-            CaptureCameraRest();
-
             bool bobEnabled = !SettingsManager.Exists || SettingsManager.Instance.Data.cameraBob;
+
             if (!bobEnabled || CurrentSpeed < 0.15f)
             {
-                CameraPivot.localPosition = Vector3.Lerp(CameraPivot.localPosition, _cameraRestPosition,
-                    Time.deltaTime * 8f);
-                return;
+                // Ease the bob offset out, never the eye height itself.
+                _bobPhaseOffsetX = Mathf.Lerp(_bobPhaseOffsetX, 0f, Time.deltaTime * 8f);
+                _bobPhaseOffsetY = Mathf.Lerp(_bobPhaseOffsetY, 0f, Time.deltaTime * 8f);
+            }
+            else
+            {
+                _bobTimer += Time.deltaTime * bobFrequency * Mathf.Clamp01(CurrentSpeed / walkSpeed);
+                _bobPhaseOffsetY = Mathf.Sin(_bobTimer) * bobAmplitude;
+                _bobPhaseOffsetX = Mathf.Cos(_bobTimer * 0.5f) * bobAmplitude * 0.5f;
             }
 
-            _bobTimer += Time.deltaTime * bobFrequency * Mathf.Clamp01(CurrentSpeed / walkSpeed);
-            float offsetY = Mathf.Sin(_bobTimer) * bobAmplitude;
-            float offsetX = Mathf.Cos(_bobTimer * 0.5f) * bobAmplitude * 0.5f;
-            CameraPivot.localPosition = _cameraRestPosition + new Vector3(offsetX, offsetY, 0f);
+            // Absolute, not relative: the pivot is re-derived from eyeHeight every frame.
+            CameraPivot.localPosition =
+                new Vector3(_bobPhaseOffsetX, eyeHeight + _bobPhaseOffsetY, 0f);
         }
 
-        /// <summary>Teleports the player (used when a case is set up).</summary>
-        public void Warp(Vector3 position, float yaw)
+        /// <summary>
+        /// Teleports the player (used when a case is set up).
+        /// <paramref name="pitch"/> is degrees to look down: standing beside a 0.95 m table, a
+        /// perfectly level view puts the surgical field off the bottom of the screen, so a case
+        /// starts with the surgeon already looking at the patient.
+        /// </summary>
+        public void Warp(Vector3 position, float yaw, float pitch = 0f)
         {
             _controller.enabled = false;
             transform.position = position;
             transform.rotation = Quaternion.Euler(0f, yaw, 0f);
-            _pitch = 0f;
+            _pitch = Mathf.Clamp(pitch, pitchMin, pitchMax);
+            ApplyEyeHeight();
             if (CameraPivot != null)
             {
-                CameraPivot.localRotation = Quaternion.identity;
+                CameraPivot.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
             }
 
             _controller.enabled = true;

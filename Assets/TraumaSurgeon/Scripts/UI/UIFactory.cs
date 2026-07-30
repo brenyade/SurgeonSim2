@@ -249,8 +249,13 @@ namespace TraumaSurgeon.UI
 
             RectTransform viewport = CreateRect("Viewport", root);
             Stretch(viewport, 4f);
-            viewport.gameObject.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.001f);
-            viewport.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+
+            // RectMask2D, not Mask. A Mask needs a Graphic to write the stencil, and the UI shader
+            // alpha-clips that graphic with clip(a - 0.001). Canvas vertex colours are quantised to
+            // bytes, so a "nearly invisible" alpha of 0.001 becomes 0, the whole mask quad is
+            // discarded, the stencil is never written, and every child of the scroll view vanishes.
+            // RectMask2D clips by rectangle instead - no graphic, no alpha, nothing to get wrong.
+            viewport.gameObject.AddComponent<RectMask2D>();
 
             RectTransform content = CreateRect("Content", viewport);
             content.anchorMin = new Vector2(0f, 1f);

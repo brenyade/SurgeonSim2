@@ -131,8 +131,29 @@ namespace TraumaSurgeon.UI
             }
         }
 
+        /// <summary>
+        /// Shown instead of an empty panel when a list has nothing in it, so a data or layout
+        /// failure reports itself rather than looking like a blank screen.
+        /// </summary>
+        private void ShowEmptyNotice(string message)
+        {
+            Text notice = UIFactory.CreateText("Empty", _listContent, message, UITheme.FontBody,
+                UITheme.Warning);
+            UIFactory.SetSize(notice.gameObject, 80f);
+        }
+
         private void BuildProcedureList()
         {
+            if (DataLibrary.Procedures.Count == 0)
+            {
+                ShowEmptyNotice(
+                    "No procedures loaded.\n\nExpected JSON at " +
+                    "Assets/TraumaSurgeon/Resources/TraumaSurgeonData/procedures.json\n" +
+                    "Run Trauma Surgeon → Validate Data Files and check the console.");
+                Debug.LogError("[CaseSelect] DataLibrary returned zero procedures.");
+                return;
+            }
+
             foreach (ProcedureData procedure in DataLibrary.Procedures)
             {
                 bool unlocked = !CareerManager.Exists || CareerManager.Instance.IsProcedureUnlocked(procedure);
@@ -185,6 +206,12 @@ namespace TraumaSurgeon.UI
 
         private void BuildTrainingList()
         {
+            if (DataLibrary.TrainingStations.Count == 0)
+            {
+                ShowEmptyNotice("No training stations loaded. Check training.json.");
+                return;
+            }
+
             foreach (TrainingStationData station in DataLibrary.TrainingStations)
             {
                 TrainingStationData captured = station;
@@ -203,6 +230,12 @@ namespace TraumaSurgeon.UI
 
         private void BuildChallengeList()
         {
+            if (DataLibrary.Challenges.Count == 0)
+            {
+                ShowEmptyNotice("No challenges loaded. Check challenges.json.");
+                return;
+            }
+
             foreach (ChallengeData challenge in DataLibrary.Challenges)
             {
                 ChallengeData captured = challenge;

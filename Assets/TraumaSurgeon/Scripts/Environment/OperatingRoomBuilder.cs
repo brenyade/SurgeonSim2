@@ -56,7 +56,9 @@ namespace TraumaSurgeon.Environment
             BuildSupplies();
             BuildStaffStations();
 
-            SurgeonSpawn = new Vector3(1.05f, 0f, 0.2f);
+            // Just outside the drape edge (x = 0.44) plus the player's 0.28 m radius, so the
+            // surgeon starts within arm's reach of the abdomen rather than across the room.
+            SurgeonSpawn = new Vector3(0.88f, 0f, 0.15f);
         }
 
         // ---- Room -------------------------------------------------------------

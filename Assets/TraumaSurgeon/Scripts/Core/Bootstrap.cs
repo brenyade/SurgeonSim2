@@ -96,6 +96,13 @@ namespace TraumaSurgeon.Core
         /// <summary>Logs data problems at boot so a bad JSON edit is obvious immediately.</summary>
         private static void ValidateData()
         {
+            // Always report the counts. If a list in the UI comes up empty, this line in the
+            // console immediately separates "data did not load" from "the UI did not draw it".
+            Debug.Log($"[Trauma Surgeon] Content loaded - {DataLibrary.Procedures.Count} procedures, " +
+                      $"{DataLibrary.Tools.Count} tools, {DataLibrary.Complications.Count} complications, " +
+                      $"{DataLibrary.TrainingStations.Count} training stations, " +
+                      $"{DataLibrary.Challenges.Count} challenges, {DataLibrary.Upgrades.Count} upgrades.");
+
             if (DataLibrary.Procedures.Count == 0)
             {
                 Debug.LogError("[Bootstrap] No procedures loaded. Check " +

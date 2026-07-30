@@ -41,10 +41,17 @@ namespace TraumaSurgeon.Player
 
             foreach (AudioListener listener in listeners)
             {
-                if (listener != null && !listener.transform.IsChildOf(rigRoot.transform))
+                if (listener == null || listener.transform.IsChildOf(rigRoot.transform))
                 {
-                    Object.Destroy(listener);
+                    continue;
                 }
+
+                // Disable BEFORE destroying. Object.Destroy is deferred to the end of the frame, so
+                // destroying alone leaves two live listeners for the rest of this frame and Unity
+                // logs "There are 2 audio listeners in the scene" - which then sticks in the status
+                // bar forever. Disabling takes effect immediately and silences it.
+                listener.enabled = false;
+                Object.Destroy(listener);
             }
 
             foreach (Camera camera in cameras)

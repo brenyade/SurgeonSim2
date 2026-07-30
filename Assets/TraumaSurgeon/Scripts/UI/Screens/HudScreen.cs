@@ -36,6 +36,7 @@ namespace TraumaSurgeon.UI
         private Image _anesthesiaFill;
         private RawImage _scopeView;
         private RectTransform _crosshair;
+        private Text _stationMarker;
         private RectTransform _toolBar;
         private readonly List<Text> _toolSlots = new List<Text>();
 
@@ -160,6 +161,15 @@ namespace TraumaSurgeon.UI
             UIFactory.Anchor((RectTransform)_promptText.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(-300f, -84f), new Vector2(300f, -50f));
 
+            // Floating signpost over the station the current objective needs. Without it, steps
+            // like "review the imaging" are a hunt around the room for an invisible trigger.
+            _stationMarker = UIFactory.CreateText("StationMarker", Root, "", UITheme.FontBody,
+                UITheme.Accent, TextAnchor.MiddleCenter, FontStyle.Bold);
+            ((RectTransform)_stationMarker.transform).sizeDelta = new Vector2(320f, 60f);
+            var markerOutline = _stationMarker.gameObject.AddComponent<Outline>();
+            markerOutline.effectColor = new Color(0f, 0f, 0f, 0.9f);
+            markerOutline.effectDistance = new Vector2(1.5f, -1.5f);
+
             _statusText = UIFactory.CreateText("Status", Root, "", UITheme.FontSmall, UITheme.TextMuted,
                 TextAnchor.MiddleCenter);
             UIFactory.Anchor((RectTransform)_statusText.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
@@ -223,6 +233,7 @@ namespace TraumaSurgeon.UI
             UpdateHand();
             UpdatePrompt();
             UpdateScope(surgery);
+            UpdateStationMarker(surgery);
             UpdateHudVisibility();
         }
 
@@ -458,6 +469,69 @@ namespace TraumaSurgeon.UI
             {
                 _scopeView.texture = surgery.Laparoscopy.ScopeTexture;
             }
+        }
+
+        /// <summary>
+        /// Projects the station required by the current objective onto the screen, with its
+        /// distance, and an edge arrow hint when it is behind the surgeon.
+        /// </summary>
+        private void UpdateStationMarker(SurgeryManager surgery)
+        {
+            if (_stationMarker == null || surgery.Objectives == null)
+            {
+                return;
+            }
+
+            ObjectiveState current = surgery.Objectives.Current;
+            InteractableStation station = current == null
+                ? null
+                : InteractableStation.ForAction(current.Data.Action);
+
+            PlayerRigBuilder.Rig rig = GameManager.Instance.PlayerRig;
+            if (station == null || rig == null || rig.Camera == null)
+            {
+                _stationMarker.text = string.Empty;
+                return;
+            }
+
+            Vector3 worldPoint = station.transform.position;
+            Vector3 screenPoint = rig.Camera.WorldToScreenPoint(worldPoint);
+            float distance = Vector3.Distance(rig.Camera.transform.position, worldPoint);
+
+            var markerRect = (RectTransform)_stationMarker.transform;
+            var canvasRect = (RectTransform)Root;
+
+            if (screenPoint.z <= 0f)
+            {
+                // Behind us: pin to the bottom edge and say which way to turn.
+                _stationMarker.text = $"↩  {station.prompt}  —  turn around  ({distance:0.0} m)";
+                markerRect.anchorMin = markerRect.anchorMax = new Vector2(0.5f, 0f);
+                markerRect.anchoredPosition = new Vector2(0f, 190f);
+                return;
+            }
+
+            markerRect.anchorMin = markerRect.anchorMax = Vector2.zero;
+
+            // Screen pixels -> canvas units, so the marker tracks at any resolution.
+            Vector2 canvasSize = canvasRect.rect.size;
+            var anchored = new Vector2(
+                screenPoint.x / Screen.width * canvasSize.x,
+                screenPoint.y / Screen.height * canvasSize.y);
+
+            // Keep it on screen even when the station is off to one side.
+            anchored.x = Mathf.Clamp(anchored.x, 170f, canvasSize.x - 170f);
+            anchored.y = Mathf.Clamp(anchored.y, 140f, canvasSize.y - 120f);
+            markerRect.anchoredPosition = anchored;
+
+            bool inRange = distance <= (rig.Interactor != null ? rig.Interactor.range : 3.2f);
+            string key = InputManager.Exists
+                ? InputManager.Instance.GetKeyLabel(GameAction.Interact)
+                : "E";
+
+            _stationMarker.color = inRange ? UITheme.Success : UITheme.Accent;
+            _stationMarker.text = inRange
+                ? $"[{key}]  {station.prompt}"
+                : $"{station.prompt}\n<size={UITheme.FontSmall}>{distance:0.0} m — walk closer</size>";
         }
 
         private void UpdateHudVisibility()
