@@ -186,6 +186,29 @@ Audio works the same way: `ProceduralAudio` synthesises every cue (monitor beeps
 saws, defibrillator charge, ambience) as a float buffer. Drop a real `.wav` into
 `Resources/TraumaSurgeonAudio/<SoundId>.wav` and `AudioManager` will use it instead.
 
+### Replacing the placeholder art
+
+The project contains **no binary art assets** — nothing is downloaded, licensed or bundled. Two
+drop-in slots exist so real assets can replace the stand-ins with no code change:
+
+| What | Drop it here | Fallback |
+| --- | --- | --- |
+| Theatre staff | `Resources/TraumaSurgeonModels/Staff_<Role>.prefab` | `Staff_Default.prefab`, then primitives |
+| Any sound cue | `Resources/TraumaSurgeonAudio/<SoundId>.wav` | synthesised in code |
+
+Staff prefabs need their origin at the feet, facing +Z, about 1.75 m tall, and no collider. Full
+notes — including how to drive a supplied rig's real bones — are in
+[`Resources/TraumaSurgeonModels/HOW_TO_ADD_MODELS.md`](Assets/TraumaSurgeon/Resources/TraumaSurgeonModels/HOW_TO_ADD_MODELS.md).
+
+The theatre team is otherwise built by `HumanoidFigureBuilder`: a proportioned humanoid (head one
+seventh of height, shoulders at 82%, elbows at the waist) with a jointed limb chain, scrub cap, mask
+and gloves, animated at the joints — breathing, head tracking toward the field, and a proper bow and
+arm pump during chest compressions.
+
+The patient's anatomy is intentionally not swappable through Resources: organs are gameplay objects
+carrying ids, layers, damage states and bleeding points. Replace the `PrimitiveFactory.Create` calls
+in `AnatomyBuilder` with prefab instantiation, keeping the ids and flags identical.
+
 ---
 
 ## Editing the content

@@ -348,25 +348,30 @@ namespace TraumaSurgeon.Environment
             string prompt, System.Action<GameObject> onInteract)
         {
             GameObject go = PrimitiveFactory.Create(PrimitiveType.Cube, name, transform, position, size,
-                MaterialLibrary.GetTransparent("station", new Color(0.25f, 0.85f, 0.95f, 0.22f)));
+                null);
 
-            // Trigger volume: the player walks through it and instruments ignore it.
+            // The volume itself is invisible. An earlier version drew it as a translucent box with
+            // a glowing band, which just put unexplained floating squares in the middle of the
+            // theatre; the HUD now projects a marker onto whichever station the objective needs,
+            // so the geometry only has to be a trigger.
+            var renderer = go.GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                renderer.enabled = false;
+            }
+
             Collider collider = go.GetComponent<Collider>();
             if (collider != null)
             {
                 collider.isTrigger = true;
             }
 
-            // Glowing outline frame so the volume reads as "interactive" and not as scenery.
-            PrimitiveFactory.Create(PrimitiveType.Cube, "Marker", go.transform,
-                Vector3.zero, new Vector3(1.04f, 0.06f, 1.04f),
-                MaterialLibrary.GetEmissive("station_marker", new Color(0.25f, 0.9f, 1f)), false);
-
-            // Floor pad directly beneath, so the station is visible from across the theatre.
+            // A flat pad on the floor is the only world-space cue: it reads as a place to stand
+            // rather than as an object hanging in mid-air.
             // Kept as a sibling: parenting it under the non-uniformly scaled volume would skew it.
             PrimitiveFactory.Create(PrimitiveType.Cylinder, name + "_Pad", transform,
-                new Vector3(position.x, 0.012f, position.z), new Vector3(0.62f, 0.006f, 0.62f),
-                MaterialLibrary.GetTransparent("station_pad", new Color(0.25f, 0.85f, 0.95f, 0.35f)),
+                new Vector3(position.x, 0.008f, position.z), new Vector3(0.55f, 0.004f, 0.55f),
+                MaterialLibrary.GetTransparent("station_pad", new Color(0.25f, 0.8f, 0.9f, 0.22f)),
                 false);
 
             var station = go.AddComponent<InteractableStation>();
