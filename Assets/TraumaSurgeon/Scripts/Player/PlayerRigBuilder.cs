@@ -24,6 +24,38 @@ namespace TraumaSurgeon.Player
             public CameraFocus Focus;
         }
 
+        /// <summary>
+        /// Disables cameras and destroys audio listeners that do not belong to the surgeon rig.
+        /// The game builds its own world at runtime, so the placeholder camera in whatever scene
+        /// the player pressed Play from is always redundant.
+        /// </summary>
+        private static void RetireForeignCamerasAndListeners(GameObject rigRoot)
+        {
+#if UNITY_2022_2_OR_NEWER
+            AudioListener[] listeners = Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None);
+            Camera[] cameras = Object.FindObjectsByType<Camera>(FindObjectsSortMode.None);
+#else
+            AudioListener[] listeners = Object.FindObjectsOfType<AudioListener>();
+            Camera[] cameras = Object.FindObjectsOfType<Camera>();
+#endif
+
+            foreach (AudioListener listener in listeners)
+            {
+                if (listener != null && !listener.transform.IsChildOf(rigRoot.transform))
+                {
+                    Object.Destroy(listener);
+                }
+            }
+
+            foreach (Camera camera in cameras)
+            {
+                if (camera != null && !camera.transform.IsChildOf(rigRoot.transform))
+                {
+                    camera.gameObject.SetActive(false);
+                }
+            }
+        }
+
         public static Rig Build(Vector3 position, float yaw)
         {
             var root = new GameObject("Surgeon");
@@ -40,6 +72,11 @@ namespace TraumaSurgeon.Player
             // Camera pivot at eye height.
             GameObject pivot = PrimitiveFactory.Empty("CameraPivot", root.transform, new Vector3(0f, 1.62f, 0f));
 
+            // The boot scene may still contain Unity's default Main Camera (with its own
+            // AudioListener). Two listeners produce a console warning and two cameras fight over
+            // the display, so anything that is not part of this rig is stood down first.
+            RetireForeignCamerasAndListeners(root);
+
             var cameraGo = new GameObject("PlayerCamera");
             cameraGo.transform.SetParent(pivot.transform, false);
             Camera camera = cameraGo.AddComponent<Camera>();
@@ -50,6 +87,8 @@ namespace TraumaSurgeon.Player
             cameraGo.tag = "MainCamera";
 
             var movement = root.AddComponent<FirstPersonController>();
+
+            // Assigned after AddComponent, so FirstPersonController must not read it in Awake.
             movement.CameraPivot = pivot.transform;
 
             // Hand anchor sits in front of and below the camera, like a held instrument.

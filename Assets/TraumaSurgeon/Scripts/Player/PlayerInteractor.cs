@@ -45,7 +45,10 @@ namespace TraumaSurgeon.Player
     public class PlayerInteractor : MonoBehaviour
     {
         public Camera PlayerCamera;
-        public float range = 2.6f;
+        public float range = 3.2f;
+
+        [Tooltip("Radius of the forgiving sweep used when the precise ray misses.")]
+        public float assistRadius = 0.45f;
 
         /// <summary>Prompt for whatever is currently targeted, or empty.</summary>
         public string CurrentPrompt { get; private set; } = string.Empty;
@@ -62,17 +65,10 @@ namespace TraumaSurgeon.Player
                 return;
             }
 
-            Ray ray = new Ray(PlayerCamera.transform.position, PlayerCamera.transform.forward);
-            // Interaction volumes are triggers, so they must be included here.
-            if (Physics.Raycast(ray, out RaycastHit hit, range, ~0, QueryTriggerInteraction.Collide) &&
-                hit.collider.GetComponentInParent<FirstPersonController>() == null)
+            _current = FindInteractable();
+            if (_current != null)
             {
-                var interactable = hit.collider.GetComponentInParent<IInteractable>();
-                if (interactable != null && interactable.CanInteract)
-                {
-                    _current = interactable;
-                    CurrentPrompt = interactable.InteractionPrompt;
-                }
+                CurrentPrompt = _current.InteractionPrompt;
             }
 
             if (_current != null && InputManager.Exists && InputManager.Instance.Pressed(GameAction.Interact))
@@ -84,6 +80,63 @@ namespace TraumaSurgeon.Player
 
                 _current.Interact(gameObject);
             }
+        }
+
+        /// <summary>
+        /// Precise ray first, then a wider sphere sweep. Stations are wall panels and sinks rather
+        /// than small props, so demanding pixel-accurate aim only makes them feel broken.
+        /// Interaction volumes are triggers, hence QueryTriggerInteraction.Collide.
+        /// </summary>
+        private IInteractable FindInteractable()
+        {
+            Vector3 origin = PlayerCamera.transform.position;
+            Vector3 direction = PlayerCamera.transform.forward;
+
+            if (Physics.Raycast(origin, direction, out RaycastHit hit, range, ~0,
+                    QueryTriggerInteraction.Collide))
+            {
+                IInteractable direct = Resolve(hit.collider);
+                if (direct != null)
+                {
+                    return direct;
+                }
+            }
+
+            RaycastHit[] sweep = Physics.SphereCastAll(origin, assistRadius, direction, range, ~0,
+                QueryTriggerInteraction.Collide);
+
+            IInteractable best = null;
+            float bestDistance = float.MaxValue;
+
+            foreach (RaycastHit candidate in sweep)
+            {
+                IInteractable interactable = Resolve(candidate.collider);
+                if (interactable == null)
+                {
+                    continue;
+                }
+
+                // SphereCastAll reports distance 0 for overlaps, so measure from the collider.
+                float distance = Vector3.Distance(origin, candidate.collider.bounds.center);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = interactable;
+                }
+            }
+
+            return best;
+        }
+
+        private static IInteractable Resolve(Collider collider)
+        {
+            if (collider == null || collider.GetComponentInParent<FirstPersonController>() != null)
+            {
+                return null;
+            }
+
+            var interactable = collider.GetComponentInParent<IInteractable>();
+            return interactable != null && interactable.CanInteract ? interactable : null;
         }
     }
 }

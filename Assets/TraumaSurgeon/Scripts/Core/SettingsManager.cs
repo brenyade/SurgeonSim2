@@ -68,7 +68,8 @@ namespace TraumaSurgeon.Core
             level = Mathf.Clamp(level, 0, 3);
             Data.graphicsQuality = level;
 
-            int unityLevels = QualitySettings.count;
+            // names.Length rather than QualitySettings.count so this compiles on 2021 LTS too.
+            int unityLevels = QualitySettings.names != null ? QualitySettings.names.Length : 0;
             if (unityLevels > 0)
             {
                 int mapped = Mathf.Clamp(Mathf.RoundToInt(level / 3f * (unityLevels - 1)), 0, unityLevels - 1);
@@ -82,7 +83,7 @@ namespace TraumaSurgeon.Core
                     QualitySettings.shadowDistance = 12f;
                     QualitySettings.pixelLightCount = 1;
                     QualitySettings.antiAliasing = 0;
-                    QualitySettings.globalTextureMipmapLimit = 1;
+                    SetTextureMipmapLimit(1);
                     QualitySettings.softParticles = false;
                     break;
                 case 1:
@@ -90,7 +91,7 @@ namespace TraumaSurgeon.Core
                     QualitySettings.shadowDistance = 25f;
                     QualitySettings.pixelLightCount = 2;
                     QualitySettings.antiAliasing = 2;
-                    QualitySettings.globalTextureMipmapLimit = 0;
+                    SetTextureMipmapLimit(0);
                     QualitySettings.softParticles = false;
                     break;
                 case 2:
@@ -98,7 +99,7 @@ namespace TraumaSurgeon.Core
                     QualitySettings.shadowDistance = 45f;
                     QualitySettings.pixelLightCount = 4;
                     QualitySettings.antiAliasing = 4;
-                    QualitySettings.globalTextureMipmapLimit = 0;
+                    SetTextureMipmapLimit(0);
                     QualitySettings.softParticles = true;
                     break;
                 default:
@@ -106,12 +107,25 @@ namespace TraumaSurgeon.Core
                     QualitySettings.shadowDistance = 70f;
                     QualitySettings.pixelLightCount = 8;
                     QualitySettings.antiAliasing = 8;
-                    QualitySettings.globalTextureMipmapLimit = 0;
+                    SetTextureMipmapLimit(0);
                     QualitySettings.softParticles = true;
                     break;
             }
 
             QualitySettings.vSyncCount = level >= 2 ? 1 : 0;
+        }
+
+        /// <summary>
+        /// Texture mipmap limit. The property was renamed in 2022.2 (masterTextureLimit ->
+        /// globalTextureMipmapLimit), so this picks whichever one the running editor has.
+        /// </summary>
+        private static void SetTextureMipmapLimit(int limit)
+        {
+#if UNITY_2022_2_OR_NEWER
+            QualitySettings.globalTextureMipmapLimit = limit;
+#else
+            QualitySettings.masterTextureLimit = limit;
+#endif
         }
 
         public string QualityName => QualityNames[Mathf.Clamp(Data.graphicsQuality, 0, 3)];

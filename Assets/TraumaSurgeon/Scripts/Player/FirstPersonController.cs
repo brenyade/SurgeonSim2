@@ -33,6 +33,7 @@ namespace TraumaSurgeon.Player
         private float _pitch;
         private float _bobTimer;
         private Vector3 _cameraRestPosition;
+        private bool _restCaptured;
 
         /// <summary>Current planar speed - used by the hand stability model.</summary>
         public float CurrentSpeed { get; private set; }
@@ -43,10 +44,30 @@ namespace TraumaSurgeon.Player
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
-            if (CameraPivot != null)
+        }
+
+        private void Start()
+        {
+            CaptureCameraRest();
+        }
+
+        /// <summary>
+        /// Records the camera pivot's eye-height offset for the head-bob to return to.
+        ///
+        /// This deliberately does NOT happen in Awake: the rig builder adds this component before
+        /// it assigns <see cref="CameraPivot"/>, so an Awake capture reads a null pivot, leaves the
+        /// rest position at the origin, and the bob then eases the camera down to the surgeon's
+        /// feet - which reads in game as spawning under the floor.
+        /// </summary>
+        private void CaptureCameraRest()
+        {
+            if (_restCaptured || CameraPivot == null)
             {
-                _cameraRestPosition = CameraPivot.localPosition;
+                return;
             }
+
+            _cameraRestPosition = CameraPivot.localPosition;
+            _restCaptured = true;
         }
 
         private void Update()
@@ -113,6 +134,10 @@ namespace TraumaSurgeon.Player
             {
                 return;
             }
+
+            // Belt and braces: if the pivot was wired up after Start, capture it the first time
+            // we actually need it rather than bobbing toward a bogus origin.
+            CaptureCameraRest();
 
             bool bobEnabled = !SettingsManager.Exists || SettingsManager.Instance.Data.cameraBob;
             if (!bobEnabled || CurrentSpeed < 0.15f)

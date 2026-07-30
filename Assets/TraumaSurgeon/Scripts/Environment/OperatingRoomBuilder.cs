@@ -337,12 +337,16 @@ namespace TraumaSurgeon.Environment
             SetLightsEnabled(true);
         }
 
-        /// <summary>Adds an interactable station with a prompt and callback.</summary>
+        /// <summary>
+        /// Adds an interactable station: a trigger volume the player can walk through, marked by a
+        /// translucent panel and a floor pad so it is findable across the room rather than being an
+        /// invisible spot you have to know about.
+        /// </summary>
         public InteractableStation AddInteractable(string name, Vector3 position, Vector3 size,
             string prompt, System.Action<GameObject> onInteract)
         {
             GameObject go = PrimitiveFactory.Create(PrimitiveType.Cube, name, transform, position, size,
-                MaterialLibrary.GetTransparent("station", new Color(0.2f, 0.8f, 0.9f, 0.12f)));
+                MaterialLibrary.GetTransparent("station", new Color(0.25f, 0.85f, 0.95f, 0.22f)));
 
             // Trigger volume: the player walks through it and instruments ignore it.
             Collider collider = go.GetComponent<Collider>();
@@ -350,6 +354,18 @@ namespace TraumaSurgeon.Environment
             {
                 collider.isTrigger = true;
             }
+
+            // Glowing outline frame so the volume reads as "interactive" and not as scenery.
+            PrimitiveFactory.Create(PrimitiveType.Cube, "Marker", go.transform,
+                Vector3.zero, new Vector3(1.04f, 0.06f, 1.04f),
+                MaterialLibrary.GetEmissive("station_marker", new Color(0.25f, 0.9f, 1f)), false);
+
+            // Floor pad directly beneath, so the station is visible from across the theatre.
+            // Kept as a sibling: parenting it under the non-uniformly scaled volume would skew it.
+            PrimitiveFactory.Create(PrimitiveType.Cylinder, name + "_Pad", transform,
+                new Vector3(position.x, 0.012f, position.z), new Vector3(0.62f, 0.006f, 0.62f),
+                MaterialLibrary.GetTransparent("station_pad", new Color(0.25f, 0.85f, 0.95f, 0.35f)),
+                false);
 
             var station = go.AddComponent<InteractableStation>();
             station.prompt = prompt;

@@ -14,7 +14,8 @@ the project has **zero paid or proprietary dependencies** and nothing to downloa
 
 ## Quick start
 
-1. Install **Unity 6** (6000.0.x or newer) via Unity Hub.
+1. Install **Unity 6** (6000.0.x or newer) via Unity Hub. The project also opens and builds on
+   **Unity 2021.3 / 2022.3 LTS** — version-specific engine APIs are behind `#if` guards.
 2. `git clone` this repository and add the folder to Unity Hub as an existing project, or use
    **Open → Add project from disk** and select the repository root.
 3. Open the project. Unity will import the scripts and generate its own `Library/` folder
@@ -29,6 +30,10 @@ That's it. The main menu builds itself at runtime; there is nothing to wire up i
 > *Input System Package (New)*, the console will warn you at load. Run
 > **Trauma Surgeon → Fix Project Setup** (or set *Project Settings → Player → Active Input Handling*
 > to **Both**) and let Unity restart.
+
+> **Starting from another scene.** If you press Play from an empty or default scene, the game
+> bootstraps itself anyway and stands down that scene's Main Camera and AudioListener so they don't
+> fight with the surgeon rig. Opening `Bootstrap.unity` is still the clean path.
 
 ### Building for Windows
 

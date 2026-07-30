@@ -201,8 +201,8 @@ namespace TraumaSurgeon.Surgery
                 return;
             }
 
-            Room.AddInteractable("Station_ScrubSink", new Vector3(3.2f, 1.2f, 2.6f),
-                new Vector3(1f, 0.6f, 0.9f), "Scrub in",
+            Room.AddInteractable("Station_ScrubSink", new Vector3(3.2f, 1.25f, 2.35f),
+                new Vector3(1.3f, 1.1f, 1.1f), "Scrub in",
                 _ =>
                 {
                     if (Patient.IsScrubbedIn)
@@ -217,8 +217,8 @@ namespace TraumaSurgeon.Surgery
                 });
 
             // Placed at the foot of the table so it never sits between the surgeon and the field.
-            Room.AddInteractable("Station_Prep", new Vector3(0f, 1.12f, -1.25f),
-                new Vector3(0.6f, 0.4f, 0.5f), "Prep and drape the patient",
+            Room.AddInteractable("Station_Prep", new Vector3(0f, 1.15f, -1.35f),
+                new Vector3(1.0f, 0.8f, 0.6f), "Prep and drape the patient",
                 _ =>
                 {
                     if (Patient.IsPrepped)
@@ -238,8 +238,8 @@ namespace TraumaSurgeon.Surgery
                         NotificationType.Success);
                 });
 
-            Room.AddInteractable("Station_Imaging", new Vector3(-2.4f, 1.7f, 2.35f),
-                new Vector3(1.2f, 0.9f, 0.4f), "Review imaging",
+            Room.AddInteractable("Station_Imaging", new Vector3(-2.25f, 1.55f, 2.30f),
+                new Vector3(1.5f, 1.5f, 0.7f), "Review imaging",
                 _ =>
                 {
                     GameEvents.RaiseActionPerformed(SurgicalActionType.ReviewImaging, null, 1f);
