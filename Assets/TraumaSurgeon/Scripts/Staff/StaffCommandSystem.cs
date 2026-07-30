@@ -120,7 +120,14 @@ namespace TraumaSurgeon.Staff
                 }
             }
 
-            // Keyboard shortcuts for the command wheel entries.
+            // Keyboard shortcuts for the command wheel entries. Suppressed while paused or in a
+            // menu so an F-key press cannot leak an order into a stopped game.
+            if (GameManager.Exists &&
+                (GameManager.Instance.IsPaused || GameManager.Instance.Phase != GamePhase.Surgery))
+            {
+                return;
+            }
+
             foreach (StaffCommandInfo info in Commands)
             {
                 if (UnityEngine.Input.GetKeyDown(info.Shortcut))

@@ -170,7 +170,9 @@ namespace TraumaSurgeon.UI
                 return;
             }
 
-            bool overlayBlocking = (Chart.IsVisible && Chart.BlocksGameplay) ||
+            // Any open overlay frees the cursor and suspends instrument input - including the
+            // command wheel, which needs the mouse to click its spokes.
+            bool overlayBlocking = Chart.IsVisible || CommandWheel.IsVisible ||
                                    Pause.IsVisible || Settings.IsVisible || SaveLoad.IsVisible;
 
             bool inSurgery = GameManager.Instance.Phase == GamePhase.Surgery;

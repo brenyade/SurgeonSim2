@@ -74,12 +74,17 @@ namespace TraumaSurgeon.Surgery
 
         private void OnDestroy()
         {
-            if (Active == this)
+            // Unity destroys at the end of the frame, so on "retry case" the replacement manager
+            // already exists and owns the shared state by the time this runs. Only the still-active
+            // manager may tear that state down.
+            if (Active != this)
             {
-                Active = null;
+                return;
             }
 
+            Active = null;
             SurgeryServices.Clear();
+
             if (AudioManager.Exists)
             {
                 AudioManager.Instance.DetachMonitor();
