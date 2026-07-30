@@ -1,0 +1,94 @@
+{
+  "stations": [
+    {
+      "id": "suturing",
+      "displayName": "Suturing",
+      "description": "Place evenly spaced interrupted sutures along a practice wound.",
+      "action": "Suture",
+      "tool": "NeedleHolder",
+      "targetRepetitions": 8,
+      "timeLimitSeconds": 180
+    },
+    {
+      "id": "incision",
+      "displayName": "Incision Control",
+      "description": "Follow the guide line through skin, fat and muscle without straying.",
+      "action": "Incise",
+      "tool": "Scalpel",
+      "targetRepetitions": 3,
+      "timeLimitSeconds": 150
+    },
+    {
+      "id": "bleeding",
+      "displayName": "Bleeding Control",
+      "description": "Clamp every bleeder in the field as fast as you can find them.",
+      "action": "Clamp",
+      "tool": "Hemostat",
+      "targetRepetitions": 6,
+      "timeLimitSeconds": 150
+    },
+    {
+      "id": "cautery",
+      "displayName": "Cautery Practice",
+      "description": "Seal small bleeders with the electrocautery pencil without burning healthy tissue.",
+      "action": "Cauterize",
+      "tool": "Electrocautery",
+      "targetRepetitions": 5,
+      "timeLimitSeconds": 150
+    },
+    {
+      "id": "tool_handling",
+      "displayName": "Tool Handling",
+      "description": "Switch instruments quickly and handle tissue without crushing it.",
+      "action": "Grasp",
+      "tool": "Forceps",
+      "targetRepetitions": 10,
+      "timeLimitSeconds": 120
+    },
+    {
+      "id": "bone_drilling",
+      "displayName": "Bone Drilling",
+      "description": "Drill four evenly spaced pilot holes without plunging.",
+      "action": "Drill",
+      "tool": "SurgicalDrill",
+      "targetRepetitions": 4,
+      "timeLimitSeconds": 200
+    },
+    {
+      "id": "chest_tube",
+      "displayName": "Chest Tube Insertion",
+      "description": "Cut down and place a chest drain into the pleural space, not the lung.",
+      "action": "InsertChestTube",
+      "tool": "ChestTube",
+      "targetRepetitions": 1,
+      "timeLimitSeconds": 200
+    },
+    {
+      "id": "cpr",
+      "displayName": "CPR",
+      "description": "Deliver compressions at 100-120 per minute on the manikin.",
+      "action": "Compressions",
+      "tool": "Hands",
+      "targetRepetitions": 20,
+      "timeLimitSeconds": 120
+    },
+    {
+      "id": "defibrillation",
+      "displayName": "Defibrillation",
+      "description": "Recognise a shockable rhythm, charge safely and deliver the shock.",
+      "action": "Defibrillate",
+      "tool": "Defibrillator",
+      "targetRepetitions": 2,
+      "timeLimitSeconds": 150
+    },
+    {
+      "id": "laparoscopy",
+      "displayName": "Laparoscopic Navigation",
+      "description": "Drive the scope and identify structures on the monitor feed.",
+      "action": "Laparoscope",
+      "tool": "LaparoscopicCamera",
+      "targetRepetitions": 5,
+      "timeLimitSeconds": 220
+    }
+  ]
+}

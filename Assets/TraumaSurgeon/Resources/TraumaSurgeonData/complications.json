@@ -1,0 +1,179 @@
+{
+  "complications": [
+    {
+      "id": "SuddenHemorrhage",
+      "displayName": "Sudden Haemorrhage",
+      "announcement": "Sudden brisk bleeding in the field!",
+      "resolutionHint": "Suction to see, then clamp or cauterise the bleeder.",
+      "resolveAction": "Clamp",
+      "timeToCriticalSeconds": 75,
+      "severity": 2.0,
+      "baseChancePerMinute": 9,
+      "triggerTags": ["activeBleeding", "highBloodLoss", "organDamage"]
+    },
+    {
+      "id": "CardiacArrest",
+      "displayName": "Cardiac Arrest",
+      "announcement": "Cardiac arrest - no output!",
+      "resolutionHint": "Start compressions, give epinephrine, shock if the rhythm is shockable.",
+      "resolveAction": "Defibrillate",
+      "timeToCriticalSeconds": 55,
+      "severity": 3.0,
+      "baseChancePerMinute": 4,
+      "triggerTags": ["highBloodLoss", "lowPressure", "lowOxygen"]
+    },
+    {
+      "id": "VentricularFibrillation",
+      "displayName": "Ventricular Fibrillation",
+      "announcement": "VF on the monitor!",
+      "resolutionHint": "Charge and shock. Amiodarone if it stays refractory.",
+      "resolveAction": "Defibrillate",
+      "resolveTool": "Defibrillator",
+      "timeToCriticalSeconds": 50,
+      "severity": 3.0,
+      "baseChancePerMinute": 4,
+      "triggerTags": ["lowOxygen", "tachycardia", "highBloodLoss"]
+    },
+    {
+      "id": "RespiratoryArrest",
+      "displayName": "Respiratory Arrest",
+      "announcement": "The patient has stopped breathing!",
+      "resolutionHint": "Lighten the anaesthetic and support ventilation.",
+      "resolveAction": "Medicate",
+      "timeToCriticalSeconds": 70,
+      "severity": 2.5,
+      "baseChancePerMinute": 5,
+      "triggerTags": ["deepAnesthesia", "lowOxygen"]
+    },
+    {
+      "id": "TensionPneumothorax",
+      "displayName": "Tension Pneumothorax",
+      "announcement": "Rising airway pressures - tension pneumothorax!",
+      "resolutionHint": "Decompress the chest with a chest tube.",
+      "resolveAction": "InsertChestTube",
+      "resolveTool": "ChestTube",
+      "timeToCriticalSeconds": 65,
+      "severity": 2.5,
+      "baseChancePerMinute": 7,
+      "triggerTags": ["lungInjury", "lowOxygen"]
+    },
+    {
+      "id": "AllergicReaction",
+      "displayName": "Anaphylaxis",
+      "announcement": "Blood pressure crashing - this looks anaphylactic.",
+      "resolutionHint": "Epinephrine, and stop whatever you just gave.",
+      "resolveAction": "Medicate",
+      "resolveTool": "Syringe",
+      "timeToCriticalSeconds": 60,
+      "severity": 2.5,
+      "baseChancePerMinute": 3,
+      "triggerTags": ["always"]
+    },
+    {
+      "id": "EquipmentMalfunction",
+      "displayName": "Equipment Malfunction",
+      "announcement": "Equipment failure in theatre!",
+      "resolutionHint": "The circulating nurse can swap the unit - keep working.",
+      "resolveAction": "Confirm",
+      "timeToCriticalSeconds": 120,
+      "severity": 1.0,
+      "baseChancePerMinute": 6,
+      "triggerTags": ["faultyEquipment", "longSurgery"]
+    },
+    {
+      "id": "AnesthesiaOverdose",
+      "displayName": "Anaesthetic Overdose",
+      "announcement": "He is far too deep - pressure and respiration dropping.",
+      "resolutionHint": "Order the anaesthetist to lighten the plane (F2).",
+      "resolveAction": "Medicate",
+      "timeToCriticalSeconds": 80,
+      "severity": 2.0,
+      "baseChancePerMinute": 8,
+      "triggerTags": ["deepAnesthesia"]
+    },
+    {
+      "id": "BloodPressureCollapse",
+      "displayName": "Blood Pressure Collapse",
+      "announcement": "Pressure is collapsing!",
+      "resolutionHint": "Blood, vasopressor, and find the bleeding.",
+      "resolveAction": "Medicate",
+      "resolveTool": "Syringe",
+      "timeToCriticalSeconds": 70,
+      "severity": 2.5,
+      "baseChancePerMinute": 8,
+      "triggerTags": ["highBloodLoss", "lowPressure", "activeBleeding"]
+    },
+    {
+      "id": "AccidentalVesselInjury",
+      "displayName": "Accidental Vessel Injury",
+      "announcement": "You have opened a vessel!",
+      "resolutionHint": "Clamp it, then repair it with a stitch. Cautery will not hold.",
+      "resolveAction": "Repair",
+      "resolveTool": "NeedleHolder",
+      "timeToCriticalSeconds": 60,
+      "severity": 2.5,
+      "baseChancePerMinute": 0,
+      "triggerTags": []
+    },
+    {
+      "id": "AccidentalOrganPerforation",
+      "displayName": "Accidental Organ Perforation",
+      "announcement": "That organ has been perforated.",
+      "resolutionHint": "Repair the defect before contamination spreads.",
+      "resolveAction": "Repair",
+      "resolveTool": "NeedleHolder",
+      "timeToCriticalSeconds": 150,
+      "severity": 1.5,
+      "baseChancePerMinute": 0,
+      "triggerTags": []
+    },
+    {
+      "id": "SurgicalFire",
+      "displayName": "Surgical Fire",
+      "announcement": "Fire in the surgical field!",
+      "resolutionHint": "Flood the field with irrigation immediately.",
+      "resolveAction": "Irrigate",
+      "resolveTool": "Irrigation",
+      "timeToCriticalSeconds": 30,
+      "severity": 3.0,
+      "baseChancePerMinute": 0,
+      "triggerTags": []
+    },
+    {
+      "id": "RetainedSponge",
+      "displayName": "Retained Sponge",
+      "announcement": "The sponge count is incorrect.",
+      "resolutionHint": "Find and remove the packed sponge before closing.",
+      "resolveAction": "Remove",
+      "resolveTool": "Sponge",
+      "timeToCriticalSeconds": 240,
+      "severity": 2.0,
+      "baseChancePerMinute": 5,
+      "triggerTags": ["retainedItem"]
+    },
+    {
+      "id": "InfectionRisk",
+      "displayName": "Contamination",
+      "announcement": "The field is contaminated.",
+      "resolutionHint": "Irrigate the wound and get antibiotics in.",
+      "resolveAction": "Irrigate",
+      "resolveTool": "Irrigation",
+      "timeToCriticalSeconds": 200,
+      "severity": 1.0,
+      "baseChancePerMinute": 5,
+      "triggerTags": ["openCavity", "longSurgery", "retainedItem"]
+    },
+    {
+      "id": "IncorrectMedicationDose",
+      "displayName": "Medication Error",
+      "announcement": "That dose is outside the therapeutic window.",
+      "resolutionHint": "Check the dose on the syringe with the mouse wheel before pushing.",
+      "resolveAction": "Medicate",
+      "resolveTool": "Syringe",
+      "timeToCriticalSeconds": 90,
+      "severity": 1.5,
+      "baseChancePerMinute": 0,
+      "triggerTags": []
+    }
+  ]
+}

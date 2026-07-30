@@ -1,0 +1,67 @@
+{
+  "challenges": [
+    {
+      "id": "golden_hour",
+      "displayName": "The Golden Hour",
+      "description": "Complete the appendectomy inside a strict time limit.",
+      "procedureId": "appendectomy",
+      "difficulty": "Attending",
+      "timeLimitSeconds": 300,
+      "rewardExperience": 400,
+      "rewardMoney": 3500
+    },
+    {
+      "id": "blackout",
+      "displayName": "Blackout",
+      "description": "The generators have failed. Operate on emergency lighting only.",
+      "procedureId": "ruptured_spleen",
+      "difficulty": "Attending",
+      "powerFailure": true,
+      "rewardExperience": 550,
+      "rewardMoney": 5000
+    },
+    {
+      "id": "dry_bank",
+      "displayName": "Empty Blood Bank",
+      "description": "Multiple injuries, two units of blood. Make them count.",
+      "procedureId": "multi_trauma",
+      "difficulty": "ImpossibleShift",
+      "limitedBlood": true,
+      "rewardExperience": 900,
+      "rewardMoney": 9000
+    },
+    {
+      "id": "solo",
+      "displayName": "Solo Operator",
+      "description": "Finish the case without ever calling for another surgeon.",
+      "procedureId": "gunshot_abdomen",
+      "difficulty": "Attending",
+      "noAssistance": true,
+      "rewardExperience": 600,
+      "rewardMoney": 5500
+    },
+    {
+      "id": "broken_kit",
+      "displayName": "Broken Kit",
+      "description": "Half the equipment in this theatre is failing. Operate anyway.",
+      "procedureId": "femur_fracture",
+      "difficulty": "Attending",
+      "faultyEquipment": true,
+      "rewardExperience": 650,
+      "rewardMoney": 6000
+    },
+    {
+      "id": "night_shift",
+      "displayName": "The Impossible Shift",
+      "description": "Everything at once: no time, no blood, no help, failing kit.",
+      "procedureId": "multi_trauma",
+      "difficulty": "ImpossibleShift",
+      "timeLimitSeconds": 720,
+      "limitedBlood": true,
+      "noAssistance": true,
+      "faultyEquipment": true,
+      "rewardExperience": 1500,
+      "rewardMoney": 18000
+    }
+  ]
+}

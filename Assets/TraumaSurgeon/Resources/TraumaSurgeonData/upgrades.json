@@ -1,0 +1,136 @@
+{
+  "upgrades": [
+    {
+      "id": "eq_monitors",
+      "displayName": "High Fidelity Monitoring",
+      "category": "Equipment",
+      "description": "Beat-to-beat arterial monitoring and depth-of-anaesthesia tracking.",
+      "cost": 8000,
+      "requiredLevel": 1,
+      "effect": "Patients deteriorate 8% more slowly",
+      "effectKey": "deterioration",
+      "effectValue": 0.08
+    },
+    {
+      "id": "eq_instruments",
+      "displayName": "Serviced Instrument Sets",
+      "category": "Equipment",
+      "description": "Freshly serviced instruments and a preventive maintenance contract.",
+      "cost": 6500,
+      "requiredLevel": 1,
+      "effect": "Equipment reliability +6%",
+      "effectKey": "equipment_reliability",
+      "effectValue": 0.06
+    },
+    {
+      "id": "eq_cellsaver",
+      "displayName": "Cell Salvage System",
+      "category": "Equipment",
+      "description": "Autotransfusion recovers the patient's own red cells from the field.",
+      "cost": 14000,
+      "requiredLevel": 2,
+      "effect": "+3 units of blood available per case",
+      "effectKey": "blood_supply",
+      "effectValue": 3
+    },
+    {
+      "id": "eq_lighting",
+      "displayName": "LED Theatre Lighting",
+      "category": "Equipment",
+      "description": "Shadowless LED array with a battery backup that survives a power cut.",
+      "cost": 11000,
+      "requiredLevel": 2,
+      "effect": "Equipment reliability +5%",
+      "effectKey": "equipment_reliability",
+      "effectValue": 0.05
+    },
+    {
+      "id": "eq_hybrid_theatre",
+      "displayName": "Hybrid Operating Theatre",
+      "category": "Equipment",
+      "description": "Intraoperative imaging and a full endovascular suite in the same room.",
+      "cost": 48000,
+      "requiredLevel": 4,
+      "effect": "Patients deteriorate 12% more slowly",
+      "effectKey": "deterioration",
+      "effectValue": 0.12
+    },
+    {
+      "id": "eq_rapid_infuser",
+      "displayName": "Rapid Infuser and Warmer",
+      "category": "Equipment",
+      "description": "Warms and delivers blood products at high flow.",
+      "cost": 17500,
+      "requiredLevel": 3,
+      "effect": "+2 units of blood available per case",
+      "effectKey": "blood_supply",
+      "effectValue": 2
+    },
+    {
+      "id": "res_damage_control",
+      "displayName": "Damage Control Surgery Programme",
+      "category": "Research",
+      "description": "Departmental protocol for abbreviated laparotomy in the unstable patient.",
+      "cost": 12000,
+      "requiredLevel": 2,
+      "effect": "+10% experience from every case",
+      "effectKey": "research_xp",
+      "effectValue": 0.10
+    },
+    {
+      "id": "res_haemostasis",
+      "displayName": "Haemostatic Resuscitation Study",
+      "category": "Research",
+      "description": "Balanced product ratios and early tranexamic acid.",
+      "cost": 15000,
+      "requiredLevel": 3,
+      "effect": "Patients deteriorate 6% more slowly",
+      "effectKey": "deterioration",
+      "effectValue": 0.06
+    },
+    {
+      "id": "res_minimally_invasive",
+      "displayName": "Minimally Invasive Fellowship",
+      "category": "Research",
+      "description": "Laparoscopic training programme for the whole department.",
+      "cost": 20000,
+      "requiredLevel": 3,
+      "effect": "+15% experience from every case",
+      "effectKey": "research_xp",
+      "effectValue": 0.15
+    },
+    {
+      "id": "res_infection",
+      "displayName": "Surgical Site Infection Bundle",
+      "category": "Research",
+      "description": "Standardised prophylaxis, normothermia and skin preparation.",
+      "cost": 9500,
+      "requiredLevel": 2,
+      "effect": "Equipment reliability +4% and cleaner fields",
+      "effectKey": "equipment_reliability",
+      "effectValue": 0.04
+    },
+    {
+      "id": "room_second_theatre",
+      "displayName": "Second Trauma Theatre",
+      "category": "Room",
+      "description": "A second fully staffed theatre so cases stop queueing.",
+      "cost": 60000,
+      "requiredLevel": 5,
+      "effect": "+20% experience from every case",
+      "effectKey": "research_xp",
+      "effectValue": 0.20
+    },
+    {
+      "id": "room_neuro_suite",
+      "displayName": "Neurosurgical Suite",
+      "category": "Room",
+      "description": "Dedicated neurosurgical theatre with navigation and a dedicated team.",
+      "cost": 75000,
+      "requiredLevel": 5,
+      "effect": "Patients deteriorate 10% more slowly",
+      "effectKey": "deterioration",
+      "effectValue": 0.10
+    }
+  ]
+}
