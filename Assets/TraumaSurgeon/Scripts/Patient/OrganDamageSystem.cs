@@ -134,7 +134,10 @@ namespace TraumaSurgeon.Patient
             if (bleedRate > 0f)
             {
                 bool major = part.layer == AnatomyLayer.Vessel;
-                int points = bleedRate > 5f ? 2 : 1;
+
+                // One discrete bleeder per ~2.5 ml/sec, so a brisk injury gives the player
+                // several distinct vessels to control rather than one unclampable firehose.
+                int points = Mathf.Clamp(Mathf.RoundToInt(bleedRate / 2.5f), 1, 3);
                 for (int i = 0; i < points; i++)
                 {
                     part.SpawnBleeder(Random.insideUnitSphere * 0.03f + Vector3.up * 0.02f,

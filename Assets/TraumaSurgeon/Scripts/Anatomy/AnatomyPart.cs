@@ -335,14 +335,24 @@ namespace TraumaSurgeon.Anatomy
             return bp;
         }
 
-        /// <summary>Nearest uncontrolled bleeder to a world point, or null.</summary>
-        public BleedingPoint FindNearestBleeder(Vector3 worldPoint, float maxDistance = 0.25f)
+        /// <summary>
+        /// Nearest bleeder to a world point, or null. By default only uncontrolled bleeders are
+        /// returned, so a hemostat moves on to the next one instead of re-targeting a clamped
+        /// vessel. Pass <paramref name="includeControlled"/> when converting a clamp into a stitch.
+        /// </summary>
+        public BleedingPoint FindNearestBleeder(Vector3 worldPoint, float maxDistance = 0.25f,
+            bool includeControlled = false)
         {
             BleedingPoint best = null;
             float bestDist = maxDistance;
             foreach (BleedingPoint bp in BleedingPoints)
             {
                 if (bp == null || bp.IsSutured || bp.IsCauterised)
+                {
+                    continue;
+                }
+
+                if (!includeControlled && bp.IsControlled)
                 {
                     continue;
                 }

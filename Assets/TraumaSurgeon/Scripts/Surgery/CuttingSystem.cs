@@ -33,15 +33,35 @@ namespace TraumaSurgeon.Surgery
 
             AnatomyPart part = ctx.Target;
 
-            // Guide path accuracy - only present on layers with a planned incision.
-            IncisionGuide guide = part.GetComponentInChildren<IncisionGuide>(true);
-            if (guide != null && guide.Points.Count > 0)
+            // Guide path accuracy. A layer can carry several planned approaches (the chest wall has
+            // both a midline sternotomy and a lateral chest-drain line), so we score against the
+            // closest one and let the player choose their approach.
+            IncisionGuide[] guides = part.GetComponentsInChildren<IncisionGuide>(true);
+            IncisionGuide best = null;
+            float bestAccuracy = -1f;
+
+            foreach (IncisionGuide guide in guides)
             {
-                result.Accuracy = guide.Accuracy(ctx.Point);
+                if (guide.Points.Count == 0)
+                {
+                    continue;
+                }
+
+                float accuracy = guide.Accuracy(ctx.Point);
+                if (accuracy > bestAccuracy)
+                {
+                    bestAccuracy = accuracy;
+                    best = guide;
+                }
+            }
+
+            if (best != null)
+            {
+                result.Accuracy = bestAccuracy;
                 result.OffGuide = result.Accuracy < 0.45f;
                 if (!result.OffGuide)
                 {
-                    guide.MarkProgress(ctx.Point);
+                    best.MarkProgress(ctx.Point);
                 }
             }
             else

@@ -309,7 +309,8 @@ namespace TraumaSurgeon.UI
 
             _objectiveList.text = sb.ToString();
 
-            string hint = objectives.CurrentHint(surgery.Profile.ShowHints);
+            bool tutorialsOn = !SettingsManager.Exists || SettingsManager.Instance.Data.showTutorials;
+            string hint = objectives.CurrentHint(surgery.Profile.ShowHints && tutorialsOn);
             ToolType required = objectives.CurrentRequiredTool();
             if (!string.IsNullOrEmpty(hint))
             {

@@ -21,7 +21,9 @@ namespace TraumaSurgeon.Surgery
     /// </summary>
     public static class SuturingSystem
     {
-        private const float MinSpacing = 0.018f;
+        // Minimum gap between stitches. Small enough that six stitches fit along a coronary
+        // artery, large enough that stacking them in one spot is still rejected.
+        private const float MinSpacing = 0.012f;
 
         public static StitchResult PlaceStitch(ref ToolUseContext ctx, bool staple = false)
         {
@@ -53,7 +55,7 @@ namespace TraumaSurgeon.Surgery
             SpawnStitchVisual(part, part.transform.InverseTransformPoint(ctx.Point), staple);
 
             // A stitch through a bleeder controls it.
-            BleedingPoint bleeder = ctx.Bleeder ?? part.FindNearestBleeder(ctx.Point, 0.05f);
+            BleedingPoint bleeder = ctx.Bleeder ?? part.FindNearestBleeder(ctx.Point, 0.05f, includeControlled: true);
             if (bleeder != null)
             {
                 bleeder.Suture();

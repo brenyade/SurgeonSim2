@@ -53,7 +53,11 @@ namespace TraumaSurgeon.Anatomy
             AnatomyPart skinChest = MakePart(body, root, AnatomyIds.SkinChest, "Chest Skin", AnatomyLayer.Skin,
                 PrimitiveType.Cube, new Vector3(0f, 0.150f, 0.45f), new Vector3(0.36f, 0.020f, 0.32f),
                 new Color(0.86f, 0.68f, 0.58f), blocksAccess: true, resistance: 0.30f);
+            // Two planned approaches through the same chest wall: a midline sternotomy for cardiac
+            // work, and a lateral line in the safe triangle for a chest drain.
             IncisionGuide.Create(skinChest.transform, new Vector3(0f, 0.163f, 0.32f), new Vector3(0f, 0.163f, 0.58f));
+            IncisionGuide.Create(skinChest.transform, new Vector3(-0.135f, 0.163f, 0.38f),
+                new Vector3(-0.135f, 0.163f, 0.52f), 5);
 
             MakePart(body, root, AnatomyIds.FatChest, "Chest Fat", AnatomyLayer.Fat,
                 PrimitiveType.Cube, new Vector3(0f, 0.128f, 0.45f), new Vector3(0.34f, 0.020f, 0.30f),
@@ -111,9 +115,11 @@ namespace TraumaSurgeon.Anatomy
             heart.injurySensitivity = 4f;
             heart.canBeRemoved = false;
 
+            // Runs across the front of the heart, not inside it, so the graft anastomosis is
+            // actually reachable once the chest is open.
             AnatomyPart coronary = MakePart(body, root, AnatomyIds.CoronaryArtery, "Left Anterior Descending",
-                AnatomyLayer.Vessel, PrimitiveType.Cylinder, new Vector3(-0.045f, 0.088f, 0.42f),
-                Quaternion.Euler(70f, 0f, 12f), new Vector3(0.008f, 0.045f, 0.008f),
+                AnatomyLayer.Vessel, PrimitiveType.Cylinder, new Vector3(-0.032f, 0.116f, 0.42f),
+                Quaternion.Euler(75f, 0f, 15f), new Vector3(0.007f, 0.050f, 0.007f),
                 new Color(0.55f, 0.13f, 0.16f), blocksAccess: false, resistance: 0.25f);
             coronary.injurySensitivity = 3.5f;
             coronary.suturesRequired = 6;
@@ -127,13 +133,13 @@ namespace TraumaSurgeon.Anatomy
             liver.injurySensitivity = 2.6f;
 
             AnatomyPart stomach = MakePart(body, root, AnatomyIds.Stomach, "Stomach", AnatomyLayer.Organ,
-                PrimitiveType.Capsule, new Vector3(-0.075f, 0.062f, 0.245f), Quaternion.Euler(0f, 0f, 60f),
-                new Vector3(0.075f, 0.075f, 0.075f), new Color(0.78f, 0.55f, 0.50f),
+                PrimitiveType.Capsule, new Vector3(-0.065f, 0.062f, 0.265f), Quaternion.Euler(0f, 0f, 60f),
+                new Vector3(0.070f, 0.070f, 0.070f), new Color(0.78f, 0.55f, 0.50f),
                 blocksAccess: false, resistance: 0.22f);
             stomach.injurySensitivity = 1.8f;
 
             AnatomyPart spleen = MakePart(body, root, AnatomyIds.Spleen, "Spleen", AnatomyLayer.Organ,
-                PrimitiveType.Sphere, new Vector3(-0.115f, 0.055f, 0.205f), new Vector3(0.085f, 0.055f, 0.07f),
+                PrimitiveType.Sphere, new Vector3(-0.130f, 0.058f, 0.185f), new Vector3(0.085f, 0.055f, 0.075f),
                 new Color(0.45f, 0.16f, 0.22f), blocksAccess: false, resistance: 0.20f);
             spleen.canBeRemoved = true;
             spleen.injurySensitivity = 2.4f;
@@ -166,9 +172,11 @@ namespace TraumaSurgeon.Anatomy
             intestines.suturesRequired = 5;
             intestines.injurySensitivity = 1.6f;
 
+            // Sits in the right iliac fossa, clear of the mesentery so it can be seen and grasped
+            // from the surgeon's viewpoint above the table.
             AnatomyPart appendix = MakePart(body, root, AnatomyIds.Appendix, "Appendix", AnatomyLayer.Organ,
-                PrimitiveType.Capsule, new Vector3(0.105f, 0.036f, 0.035f), Quaternion.Euler(35f, 0f, 0f),
-                new Vector3(0.022f, 0.038f, 0.022f), new Color(0.80f, 0.45f, 0.40f),
+                PrimitiveType.Capsule, new Vector3(0.125f, 0.046f, 0.025f), Quaternion.Euler(35f, 0f, 0f),
+                new Vector3(0.024f, 0.040f, 0.024f), new Color(0.80f, 0.45f, 0.40f),
                 blocksAccess: false, resistance: 0.16f);
             appendix.canBeRemoved = true;
 
@@ -276,6 +284,10 @@ namespace TraumaSurgeon.Anatomy
             Cover(body, AnatomyIds.SkinChest, AnatomyIds.FatChest);
             Cover(body, AnatomyIds.FatChest, AnatomyIds.MuscleChest);
             Cover(body, AnatomyIds.MuscleChest, AnatomyIds.Ribs, AnatomyIds.Sternum, AnatomyIds.PleuralSpace);
+
+            // A chest drain opens the pleural space beside the lung, which is how the player gets
+            // to reassess lung expansion without opening the whole chest.
+            Cover(body, AnatomyIds.PleuralSpace, AnatomyIds.LungLeft);
             Cover(body, AnatomyIds.Ribs, AnatomyIds.LungLeft, AnatomyIds.LungRight, AnatomyIds.Heart,
                 AnatomyIds.CoronaryArtery);
             Cover(body, AnatomyIds.Sternum, AnatomyIds.Heart, AnatomyIds.CoronaryArtery);

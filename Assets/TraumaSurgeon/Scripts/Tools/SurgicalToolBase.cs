@@ -149,13 +149,22 @@ namespace TraumaSurgeon.Tools
             GameEvents.RaiseScoreEvent(ScoreEventType.UnnecessaryAction, 1f, $"{DisplayName}: {reason}");
         }
 
-        /// <summary>Reports a successful action to the objective and scoring systems.</summary>
+        /// <summary>
+        /// Reports a successful action to the objective and scoring systems.
+        /// The tool's <c>precisionRequirement</c> from tools.json shapes the scored quality:
+        /// a demanding instrument (needle holder, drill) punishes a shaky hand harder than a
+        /// forgiving one (sponge, suction), while the objective itself still completes either way.
+        /// </summary>
         protected void ReportAction(SurgicalActionType action, AnatomyPart target, float quality)
         {
             GameEvents.RaiseActionPerformed(action, target, quality);
+
+            float demand = Data != null ? Mathf.Clamp01(Data.precisionRequirement) : 0.5f;
+            float scored = Mathf.Clamp01(Mathf.Lerp(quality, quality * quality, demand));
+
             GameEvents.RaiseScoreEvent(
-                quality >= 0.6f ? ScoreEventType.PrecisionGood : ScoreEventType.PrecisionPoor,
-                quality,
+                scored >= 0.6f ? ScoreEventType.PrecisionGood : ScoreEventType.PrecisionPoor,
+                scored,
                 DisplayName);
         }
 

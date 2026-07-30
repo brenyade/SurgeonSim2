@@ -33,10 +33,9 @@ namespace TraumaSurgeon.Data
         public string secondaryAction;       // SurgicalActionType name
         public string misuseConsequence;     // shown in the tool codex and used by the misuse system
         public string colorHex = "#B8C4CC";
-        public float length = 0.22f;
+        public float length = 0.22f;         // nominal length in metres, shown in the tool codex
         public float precisionRequirement = 0.5f;   // 0 = forgiving, 1 = demanding
         public float tissueDamageOnMisuse = 6f;
-        public int hotkey = 0;               // 1..9, 0 = not on the quick bar
         public int unlockLevel = 0;          // CareerRank index required
 
         public ToolType Type => EnumParse.To(id, ToolType.None);

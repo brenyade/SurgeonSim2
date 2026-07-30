@@ -12,6 +12,7 @@ using TraumaSurgeon.Player;
 using TraumaSurgeon.Scoring;
 using TraumaSurgeon.Staff;
 using TraumaSurgeon.Tools;
+using TraumaSurgeon.Visuals;
 using UnityEngine;
 
 namespace TraumaSurgeon.Surgery
@@ -139,6 +140,7 @@ namespace TraumaSurgeon.Surgery
 
             Patient = go.AddComponent<PatientController>();
             Patient.Initialise(Procedure.patient, Profile);
+            BloodEffectSystem.Attach(Patient);
         }
 
         private void BuildSubsystems()

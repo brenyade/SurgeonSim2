@@ -84,6 +84,7 @@ namespace TraumaSurgeon.Tools
         public override bool IsContinuous => true;
 
         private float _removedThisUse;
+        private float _activeSeconds;
 
         public override void UsePrimary(ref ToolUseContext ctx)
         {
@@ -95,10 +96,14 @@ namespace TraumaSurgeon.Tools
             float removed = SuctionSystem.Suction(ref ctx, 120f);
             removed += ChestTubeSystem.Drain(ctx.Patient, 40f, ctx.DeltaTime);
             _removedThisUse += removed;
+            _activeSeconds += ctx.DeltaTime;
 
-            if (_removedThisUse > 60f)
+            // Report on volume cleared, or on sustained use: checking a dry field for bleeding is a
+            // legitimate surgical step and must never be impossible to complete.
+            if (_removedThisUse > 60f || _activeSeconds > 1.5f)
             {
                 _removedThisUse = 0f;
+                _activeSeconds = 0f;
                 ReportAction(SurgicalActionType.Suction, ctx.Target, ctx.Quality);
             }
         }
@@ -123,6 +128,7 @@ namespace TraumaSurgeon.Tools
 
         public override void OnPrimaryReleased()
         {
+            _activeSeconds = 0f;
             StopContinuousAudio();
         }
 

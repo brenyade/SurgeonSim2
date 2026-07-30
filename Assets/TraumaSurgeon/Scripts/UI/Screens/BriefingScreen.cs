@@ -62,9 +62,10 @@ namespace TraumaSurgeon.UI
             UIFactory.SetSize(planScroll.gameObject, 280f);
             RectTransform planContent = UIFactory.CreateScrollView("PlanList", planScroll, out _);
             UIFactory.Stretch((RectTransform)planContent.parent.parent);
+            // No LayoutElement: the Text reports its own preferred height so the scroll view grows
+            // with the operative plan and the instrument codex.
             _planText = UIFactory.CreateText("PlanText", planContent, "", UITheme.FontBody,
                 UITheme.TextPrimary);
-            UIFactory.SetSize(_planText.gameObject, 260f, 900f);
 
             _tutorialText = UIFactory.CreateText("Tutorial", planPanel, "", UITheme.FontSmall,
                 UITheme.Warning);
@@ -154,6 +155,7 @@ namespace TraumaSurgeon.UI
                 plan.AppendLine();
             }
 
+            AppendInstrumentCodex(plan, procedure);
             _planText.text = plan.ToString();
 
             var tutorial = new StringBuilder();
@@ -169,6 +171,41 @@ namespace TraumaSurgeon.UI
             }
 
             _tutorialText.text = tutorial.ToString();
+        }
+
+        /// <summary>
+        /// Lists the instruments on the tray for this case with what each one does, what its
+        /// alternate function is, and what happens if it is used on the wrong thing.
+        /// </summary>
+        private static void AppendInstrumentCodex(StringBuilder plan, ProcedureData procedure)
+        {
+            plan.AppendLine();
+            plan.AppendLine($"<size={UITheme.FontSubheading}><b>INSTRUMENT TRAY</b></size>");
+            plan.AppendLine();
+
+            foreach (string toolId in procedure.requiredTools)
+            {
+                if (!System.Enum.TryParse(toolId, true, out ToolType type))
+                {
+                    continue;
+                }
+
+                ToolData tool = DataLibrary.GetTool(type);
+                if (tool == null)
+                {
+                    continue;
+                }
+
+                plan.AppendLine($"<b>{tool.displayName}</b>  " +
+                                $"<size={UITheme.FontSmall}><color=#9AACB6>{tool.category} · " +
+                                $"{tool.length * 100f:0} cm</color></size>");
+                plan.AppendLine($"<size={UITheme.FontSmall}><color=#9AACB6>{tool.description}</color></size>");
+                plan.AppendLine($"<size={UITheme.FontSmall}><color=#43C9D9>Left click: {tool.Primary}" +
+                                $"   ·   Right click: {tool.Secondary}</color></size>");
+                plan.AppendLine($"<size={UITheme.FontSmall}><color=#F0B23C>Misuse: " +
+                                $"{tool.misuseConsequence}</color></size>");
+                plan.AppendLine();
+            }
         }
     }
 }
